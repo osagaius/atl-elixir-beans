@@ -44,9 +44,10 @@ defmodule Beans.Classification do
     |> Stream.filter(fn(line) -> line != "" end)
     |> Stream.map(fn(line) -> String.strip(line) end)
     |> Stream.map(fn(line) -> line |> String.split(",") end)
+    |> Stream.filter(fn(list) -> list |> Enum.count >= 2 end)
     |> Enum.each(fn(list) ->
-      key = list |> Enum.at(0)
-      value = list |> Enum.at(1)
+      key = list |> Enum.at(0) |> String.downcase
+      value = list |> Enum.at(1) |> String.downcase
       GenServer.cast(__MODULE__, {:add_item_to_store, [key, value]})
     end)
     {:noreply, state}
