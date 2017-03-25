@@ -16,9 +16,10 @@ defmodule Beans.Classification do
     state = %{
       store:         %{}
     }
-    #GenServer.cast(self(), {:build_store})
     {:ok, state}
   end
+
+  #API
 
   @doc """
   Primes the cache by parsing files in the `priv/data` directory
@@ -35,14 +36,18 @@ defmodule Beans.Classification do
     end
   end
 
+  #Handlers
+
   def handle_cast({:build_store, [data_path]}, state) do
     File.stream!(data_path)
-    |> Stream.map(fn(line) -> String.strip(line) end)
     |> Stream.filter(fn(line) -> !is_nil(line) end)
     |> Stream.filter(fn(line) -> line != "" end)
+    |> Stream.map(fn(line) -> String.strip(line) end)
     |> Stream.map(fn(line) -> line |> String.split(",") end)
-    |> Enum.each(fn(luma_uuid) ->
-      #Cachex.set(:luma_uuid_cache, luma_uuid |> String.upcase, "")
+    |> Enum.each(fn(list) ->
+      key = list |> Enum.at(0)
+      value = list |> Enum.at(1)
+      GenServer.cast(__MODULE__, {:add_item_to_store, [key, value]})
     end)
     {:noreply, state}
   end
@@ -53,15 +58,5 @@ defmodule Beans.Classification do
   end
 
   #Private Helpers
-  defp build_store_from_file(data_path) do
-    File.stream!(data_path)
-    |> Stream.map(fn(line) -> String.strip(line) end)
-    |> Stream.filter(fn(line) -> !is_nil(line) end)
-    |> Stream.filter(fn(line) -> line != "" end)
-    |> Stream.map(fn(line) -> line |> String.split(",") end)
-    |> Enum.each(fn(luma_uuid) ->
-      #Cachex.set(:luma_uuid_cache, luma_uuid |> String.upcase, "")
-    end)
-  end
 
 end
