@@ -16,6 +16,9 @@ defmodule Beans.Classification do
     state = %{
       store:         %{}
     }
+
+    build_store()
+
     {:ok, state}
   end
 
@@ -35,6 +38,8 @@ defmodule Beans.Classification do
         {:error, msg}
     end
   end
+
+
 
   #Handlers
 
