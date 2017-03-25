@@ -29,7 +29,7 @@ defmodule Beans.ClassificationTest do
 
     #sleep for 25ms so the process handles the message
     :timer.sleep(25)
-    
+
     process_store = :sys.get_state(pid) |> Map.get(:store, [])
     assert process_store |> Map.keys |> Enum.count > 0
   end
