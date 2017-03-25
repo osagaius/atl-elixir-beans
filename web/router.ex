@@ -19,6 +19,12 @@ defmodule Beans.Router do
     get "/", PageController, :index
   end
 
+  scope "/api/v1/", Beans do
+    pipe_through :api
+
+    get "/classification", ClassificationController, :get_classification
+  end
+
   # Other scopes may use custom stacks.
   # scope "/api", Beans do
   #   pipe_through :api

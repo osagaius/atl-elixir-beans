@@ -39,7 +39,9 @@ defmodule Beans.Classification do
     end
   end
 
-
+  def get_classification(bean_name) do
+    GenServer.call(__MODULE__, {:get_classification, [bean_name]})
+  end
 
   #Handlers
 
@@ -62,6 +64,16 @@ defmodule Beans.Classification do
     new_store = state.store |> Map.put(key, val)
     {:noreply, %{state | store: new_store}}
   end
+
+  def handle_call({:get_classification, [bean_name]}, from, state) do
+    reply = case result = state.store |> Map.get(bean_name) do
+      nil -> {:error, "Classification not found"}
+      _ -> {:ok, result}
+    end
+
+    {:reply, reply, state}
+  end
+
 
   #Private Helpers
 
