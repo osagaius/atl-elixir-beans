@@ -13,8 +13,11 @@ defmodule Beans.Classification do
 
   def init(opts) do
     Logger.debug("#{__MODULE__} starting...")
+    table = :ets.new(:beans_store, [:set, :protected])
+
     state = %{
-      store:         %{}
+      store:         %{},
+      table:         table
     }
 
     build_store()
@@ -61,14 +64,16 @@ defmodule Beans.Classification do
   end
 
   def handle_cast({:add_item_to_store, [key, val]}, state) do
-    new_store = state.store |> Map.put(key, val)
-    {:noreply, %{state | store: new_store}}
+    :ets.insert(state.table, {key, val})
+    {:noreply, state}
   end
 
   def handle_call({:get_classification, [bean_name]}, from, state) do
-    reply = case result = state.store |> Map.get(bean_name) do
-      nil -> {:error, "Classification not found"}
-      _ -> {:ok, result}
+    reply = case result = :ets.lookup(state.table, bean_name) do
+      [{bean_name, class}] ->
+        {:ok, class}
+      _ ->
+        {:error, "Classification not found"}
     end
 
     {:reply, reply, state}
