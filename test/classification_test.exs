@@ -13,8 +13,7 @@ defmodule Beans.ClassificationTest do
   test "store is built", context do
     pid = Process.whereis(Beans.Classification)
 
-    process_store = :sys.get_state(pid) |> Map.get(:store, [])
-    assert process_store |> Map.keys |> Enum.count > 0
+    assert {:ok, "phaseolus"} == Beans.Classification.get_classification("pinto")
   end
 
 
