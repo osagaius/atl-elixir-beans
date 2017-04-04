@@ -11,7 +11,7 @@ defmodule Beans.ClassificationTest do
   end
 
   test "store is built", context do
-    assert Beans.Classification.get_classification("pinto") == "phaseolus"
+    assert Beans.Classification.get_classification("pinto") == {:ok, "phaseolus"}
   end
 
 
