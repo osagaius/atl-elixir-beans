@@ -14,7 +14,8 @@ defmodule Beans.Classification do
   def init(opts) do
     Logger.debug("#{__MODULE__} starting...")
     state = %{
-      store:         %{}
+      store:         %{},
+      counters:      %{}
     }
 
     build_store()
@@ -40,6 +41,7 @@ defmodule Beans.Classification do
   end
 
   def get_classification(bean_name) do
+    GenServer.cast(__MODULE__, {:increment_counter, [bean_name]})
     GenServer.call(__MODULE__, {:get_classification, [bean_name]})
   end
 
@@ -63,6 +65,12 @@ defmodule Beans.Classification do
   def handle_cast({:add_item_to_store, [key, val]}, state) do
     new_store = state.store |> Map.put(key, val)
     {:noreply, %{state | store: new_store}}
+  end
+
+  def handle_cast({:increment_counter, [key]}, state) do
+    current_value = state.counters |> Map.get(key, 0)
+    new_counters = state.counters |> Map.put(key, current_value + 1)
+    {:noreply, %{state | counters: new_counters}}
   end
 
   def handle_call({:get_classification, [bean_name]}, from, state) do

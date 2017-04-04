@@ -17,5 +17,14 @@ defmodule Beans.ClassificationTest do
     assert process_store |> Map.keys |> Enum.count > 0
   end
 
+  test "increments counter for bean name", context do
+    pid = Process.whereis(Beans.Classification)
+
+    bean_name = "test_bean"
+    Beans.Classification.get_classification(bean_name)
+    process_counters = :sys.get_state(pid) |> Map.get(:counters)
+    assert process_counters |> Map.get(bean_name) == 1
+  end
+
 
 end
