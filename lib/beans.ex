@@ -1,10 +1,31 @@
 defmodule Beans do
   use Application
+  require Logger
 
   # See http://elixir-lang.org/docs/stable/elixir/Application.html
   # for more information on OTP Applications
   def start(_type, _args) do
     import Supervisor.Spec
+
+    # Install Mnesia Database
+    mnesia_path = Path.join([System.cwd(), "Mnesia.#{node()}"])
+    db = Beans.Db
+    case File.exists?(mnesia_path) do
+      false ->
+        Logger.warn("Installing database...")
+        Amnesia.stop()
+        Amnesia.Schema.create
+        Amnesia.start
+        try do
+          db.create!([disk: [node()]])
+          :ok = db.wait(15000)
+        after
+          Amnesia.stop
+        end
+        Amnesia.start()
+      true ->
+        Amnesia.start()
+    end
 
     # Define workers and child supervisors to be supervised
     children = [
