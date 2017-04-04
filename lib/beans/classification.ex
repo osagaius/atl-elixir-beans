@@ -68,10 +68,8 @@ defmodule Beans.Classification do
   def handle_call({:get_classification, [bean_name]}, from, state) do
     reply = case result = Beans.Db.BeanClassification.find_by_name(bean_name) do
       [head|tail] ->
-        result
-        |> Enum.map(fn(item) -> item.classification end)
-        |> Enum.join(",")
-
+        resp = result |> List.first |> Map.get(:classification)
+        {:ok, resp}
       _ ->
         {:error, "Classification not found"}
     end
