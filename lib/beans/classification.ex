@@ -43,6 +43,10 @@ defmodule Beans.Classification do
     GenServer.call(__MODULE__, {:get_classification, [bean_name]})
   end
 
+  def add_bean(bean_name, classification) do
+    Beans.Db.BeanClassification.add(bean_name, classification)
+  end
+
   #Handlers
 
   def handle_cast({:build_store, [data_path]}, state) do
