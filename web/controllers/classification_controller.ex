@@ -25,7 +25,7 @@ defmodule Beans.ClassificationController do
       is_nil(params["classification"]) ->
         {404, %{"error" => "Invalid classification"}}
       true ->
-        Beams.Classification.add_bean(params["bean_name"], params["classification"])
+        Beans.Classification.add_bean(params["bean_name"], params["classification"])
         {200, %{"success" => "True"}}
     end
 
