@@ -19,6 +19,16 @@ defmodule Beans.ClassificationController do
     %{resp_headers: resp_headers} = conn
     conn = %{conn| resp_headers: [{"content-type", "application/json"}|resp_headers]}
 
-    send_resp(conn, 404, %{"error" => "Invalid bean name"} |> Poison.encode!)
+    {status, resp_body} = cond do
+      is_nil(params["bean_name"]) ->
+        {404, %{"error" => "Invalid bean name"}}
+      is_nil(params["classification"]) ->
+        {404, %{"error" => "Invalid classification"}}
+      true ->
+        Beams.Classification.add_bean(params["bean_name"], params["classification"])
+        {200, %{"success" => "True"}}
+    end
+
+    send_resp(conn, status, resp_body |> Poison.encode!)
   end
 end
