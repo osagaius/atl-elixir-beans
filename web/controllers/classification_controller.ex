@@ -14,4 +14,11 @@ defmodule Beans.ClassificationController do
         send_resp(conn, 404, Poison.encode!(resp_body))
     end
   end
+
+  def add_bean_classification(conn, params) do
+    %{resp_headers: resp_headers} = conn
+    conn = %{conn| resp_headers: [{"content-type", "application/json"}|resp_headers]}
+
+    send_resp(conn, 404, %{"error" => "Invalid bean name"} |> Poison.encode!)
+  end
 end

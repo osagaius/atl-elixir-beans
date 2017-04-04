@@ -23,6 +23,7 @@ defmodule Beans.Router do
     pipe_through :api
 
     get "/classification", ClassificationController, :get_classification
+    post "/classification", ClassificationController, :add_bean_classification
   end
 
   # Other scopes may use custom stacks.
