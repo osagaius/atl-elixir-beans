@@ -3,10 +3,8 @@ defmodule Beans.ClassificationControllerTest do
   require Logger
 
   test "200 GET /api/v1/classification valid bean name", %{conn: conn} do
-    pid = Process.whereis(Beans.Classification)
-    process_store = :sys.get_state(pid) |> Map.get(:store, [])
-    bean_name = process_store |> Map.keys |> Enum.random
-    expected_class = process_store |> Map.get(bean_name)
+    bean_name = "pinto"
+    expected_class = "phaseolus"
     conn = get conn, "/api/v1/classification?bean_name=#{bean_name}"
 
     assert conn.status == 200
