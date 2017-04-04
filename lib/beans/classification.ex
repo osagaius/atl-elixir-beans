@@ -61,14 +61,19 @@ defmodule Beans.Classification do
   end
 
   def handle_cast({:add_item_to_store, [key, val]}, state) do
-    new_store = state.store |> Map.put(key, val)
-    {:noreply, %{state | store: new_store}}
+    Beans.Db.BeanClassification.add(key, val)
+    {:noreply, state}
   end
 
   def handle_call({:get_classification, [bean_name]}, from, state) do
-    reply = case result = state.store |> Map.get(bean_name) do
-      nil -> {:error, "Classification not found"}
-      _ -> {:ok, result}
+    reply = case result = Beans.Db.BeanClassification.find_by_name(bean_name) do
+      [head|tail] ->
+        result
+        |> Enum.map(fn(item) -> item.classification end)
+        |> Enum.join(",")
+
+      _ ->
+        {:error, "Classification not found"}
     end
 
     {:reply, reply, state}
