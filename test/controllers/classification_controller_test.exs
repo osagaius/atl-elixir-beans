@@ -6,7 +6,8 @@ defmodule Beans.ClassificationControllerTest do
     Beans.Classification.start_link
 
     {:ok, %{
-      class: "phaseolus"
+      bean_name: "pinto-#{:os.system_time(:seconds)}",
+      class: "phaseolus-#{:os.system_time(:seconds)}"
     }}
   end
 
@@ -47,6 +48,25 @@ defmodule Beans.ClassificationControllerTest do
 
     assert conn.status == 404
     assert conn.resp_body |> Poison.decode! |> Map.has_key?("error")
+  end
+
+  test "404 POST /api/v1/classification invalid classification", context do
+    conn = context.conn
+    |> post("/api/v1/classification?bean_name=#{context.bean_name}")
+
+    assert conn.status == 404
+    assert conn.resp_body |> Poison.decode! |> Map.has_key?("error")
+  end
+
+  test "200 POST /api/v1/classification invalid classification", context do
+    assert Beans.Classification.get_classification(context.bean_name) != {:ok, context.class}
+
+    conn = context.conn
+    |> post("/api/v1/classification?bean_name=#{context.bean_name}&classification=#{context.class}")
+
+    assert conn.status == 200
+    assert conn.resp_body |> Poison.decode! |> Map.has_key?("success")
+    assert Beans.Classification.get_classification(context.bean_name) == {:ok, context.class}
   end
 
 end
