@@ -2,6 +2,14 @@ defmodule Beans.ClassificationControllerTest do
   use Beans.ConnCase
   require Logger
 
+  setup do
+    Beans.Classification.start_link
+
+    {:ok, %{
+      class: "phaseolus"
+    }}
+  end
+
   test "200 GET /api/v1/classification valid bean name", %{conn: conn} do
     bean_name = "pinto"
     expected_class = "phaseolus"
@@ -32,4 +40,13 @@ defmodule Beans.ClassificationControllerTest do
     assert conn.status == 404
     assert conn.resp_body |> Poison.decode! |> Map.has_key?("error")
   end
+
+  test "404 POST /api/v1/classification nil bean name", context do
+    conn = context.conn
+    |> post("/api/v1/classification?classification=#{context.class}")
+
+    assert conn.status == 404
+    assert conn.resp_body |> Poison.decode! |> Map.has_key?("error")
+  end
+
 end
